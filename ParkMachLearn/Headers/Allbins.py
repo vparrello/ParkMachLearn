@@ -1,5 +1,5 @@
 '''
-Created on May 1, 2021
+Created on May 21, 2021
 
 @author: fig
 '''
@@ -8,18 +8,7 @@ samplelist = []
 finallist = {}
 taxonbins = set()
 bindict = {}
-conversion = {}
 
-#create a dictionary connecting genomeids to repgenids
-def repgendict(filename):
-    #open the file
-    with open(filename, 'rt') as repgendoc:
-        for line in repgendoc:
-            line = line.rstrip('\n')
-            repgen = line.split('\t')
-            #first column is the genomes and the third column is the repgenset
-            #take the genome and make it a key for the repgen value in the dictionary
-            conversion[repgen[0]] = repgen[2]
 #Run numbers in a dictionary with floats for 1 = park and 0 = control
 def definedruns(filename, kind):
     #opens file
@@ -51,10 +40,9 @@ def taxonids(filename):
                 for binid in binids:
                     #ignore empty sets
                     if binid != '':
-                        repgenid = conversion[binid]
                         #put the bin ids as values in a dictionary connected to the sample ids as keys
-                        binset.add(repgenid)
-                        taxonbins.add(repgenid)                 
+                        binset.add(binid)
+                        taxonbins.add(binid)                 
                 bindict[collum[0]] = binset 
 #create a table based on if the taxonids are used by that run            
 def unionbinsample():
@@ -75,12 +63,10 @@ def unionbinsample():
                 else:
                     presencelist.append('0.0')
             outtable.write(key + '\t' + '\t'.join(presencelist) + '\t' + finallist[key] + '\n') 
-
 definedruns('ParkCbins.tbl', '0.0') 
-definedruns('ParkSbins.tbl', '1.0')
-repgendict('bindict.tbl')         
+definedruns('ParkSbins.tbl', '1.0')         
 taxonids('ParkSbins.tbl')
 taxonids('ParkCbins.tbl')
-unionbinsample()       
+unionbinsample()      
 if __name__ == '__main__':
     pass
